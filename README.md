@@ -1,6 +1,13 @@
 # DB-KDE-Widget
 
+![Screenshot Main Page](/repo/screenshot2.png)
+
 DB-KDE-Widget is a modern widget for KDE Plasma that displays the timetable of a chosen train connection of Deutsche Bahn trains. You can specify the departure and arrival station and it shows you realtime information of times and potential delays.
+
+## Screenshots
+
+![Screenshot Desktop](/repo/screenshot1.png)
+![Screenshot Settings](/repo/screenshot3.png)
 
 ## Development
 
