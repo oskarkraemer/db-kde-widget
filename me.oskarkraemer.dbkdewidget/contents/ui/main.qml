@@ -1,8 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 import QtWebEngine
+import QtWebChannel
 import org.kde.plasma.plasmoid
-import org.kde.kirigami as Kirigami
 
 PlasmoidItem {
     id: root
@@ -14,39 +14,34 @@ PlasmoidItem {
     width: 400
     height: 300
 
-    // This listens for global theme changes
-    Connections {
-        target: Kirigami.Theme
-        function onColorsChanged() {
-            root.injectTheme();
+    QtObject {
+        id: configBridge
+        WebChannel.id: "configBridge"
+
+        property string from_station_id: Plasmoid.configuration.from_station_id
+        property string from_station_name: Plasmoid.configuration.from_station_name
+        property string to_station_id: Plasmoid.configuration.to_station_id
+        property string to_station_name: Plasmoid.configuration.to_station_name
+        property int refresh_interval: Plasmoid.configuration.refresh_interval
+
+        function setFromStation(id, name) {
+            Plasmoid.configuration.from_station_id = id;
+            Plasmoid.configuration.from_station_name = name;
+        }
+
+        function setToStation(id, name) {
+            Plasmoid.configuration.to_station_id = id;
+            Plasmoid.configuration.to_station_name = name;
+        }
+
+        function setRefreshInterval(interval) {
+            Plasmoid.configuration.refresh_interval = interval;
         }
     }
 
-    function injectTheme() {
-        // Kirigami.Theme provides the most accurate system colors
-        let cssVars = `
-            :root {
-                --plasma-bg: ${Kirigami.Theme.backgroundColor};
-                --plasma-text: ${Kirigami.Theme.textColor};
-                --plasma-highlight: ${Kirigami.Theme.highlightColor};
-                --plasma-highlight-text: ${Kirigami.Theme.highlightedTextColor};
-                --plasma-button-bg: ${Kirigami.Theme.buttonBackgroundColor};
-                --plasma-button-text: ${Kirigami.Theme.buttonTextColor};
-            }
-        `;
-        
-        let js = `
-            (function() {
-                let style = document.getElementById('plasma-theme-vars');
-                if (!style) {
-                    style = document.createElement('style');
-                    style.id = 'plasma-theme-vars';
-                    document.head.appendChild(style);
-                }
-                style.textContent = \`${cssVars}\`;
-            })();
-        `;
-        webengine.runJavaScript(js);
+    WebChannel {
+        id: plasmaWebChannel
+        registeredObjects: [configBridge]
     }
 
     fullRepresentation: Item {
@@ -55,6 +50,8 @@ PlasmoidItem {
             anchors.fill: parent
             backgroundColor: "transparent"
             url: root.isDev ? root.devUrl : root.prodUrl
+            
+            webChannel: plasmaWebChannel
             
             settings.javascriptEnabled: true
             settings.localContentCanAccessRemoteUrls: true

@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import type { Dispatch } from "react";
 import StationSelectInput from "./StationSelectInput";
 
 export type SettingsType = {
   fromStationId: string;
-  setFromStationId: Dispatch<any>;
-
   toStationId: string;
-  setToStationId: Dispatch<any>;
-
   refreshInterval: number;
-  setRefreshInterval: Dispatch<any>;
+  savePersistentConfig: (
+    newFromStationId: string,
+    newFromStationName: string,
+    newToStationId: string,
+    newToStationName: string,
+    newRefreshInterval: number,
+  ) => void;
 };
 
 type SettingsModalProps = {
@@ -18,10 +19,7 @@ type SettingsModalProps = {
   setIsOpen: (open: boolean) => void;
 
   fromStationName: string;
-  setFromStationName: Dispatch<any>;
-
   toStationName: string;
-  setToStationName: Dispatch<any>;
 } & SettingsType;
 
 export default function SettingsModal(props: SettingsModalProps) {
@@ -46,14 +44,11 @@ export default function SettingsModal(props: SettingsModalProps) {
   if (!props.isOpen) return null;
 
   function saveSettings() {
-    props.setFromStationId(fromId);
-    props.setFromStationName(fromName);
-
-    props.setToStationId(toId);
-    props.setToStationName(toName);
-
-    props.setRefreshInterval(interval);
-
+    try {
+      props.savePersistentConfig(fromId, fromName, toId, toName, interval);
+    } catch (error) {
+      alert("Failed to save settings: " + error);
+    }
     props.setIsOpen(false);
   }
 
