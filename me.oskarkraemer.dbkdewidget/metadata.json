@@ -4,7 +4,7 @@
     "Name": "Deutsche Bahn Widget",
     "Description": "A simple widget to display the next departures of a given station using the Deutsche Bahn API.",
     "Icon": "applications-development",
-    "Version": "1.0",
+    "Version": "1.0.1",
     "Authors": [
       {
         "Name": "Oskar Krämer"
